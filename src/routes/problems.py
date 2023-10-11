@@ -18,11 +18,11 @@ async def insert_problem(
     session: Annotated[Client, Depends(get_session)],
     request: Request,
     payload: Annotated[dict, Body(examples=[{"hello": "world", "z": "6.456"}])],
-)->JSONResponse:
+) -> JSONResponse:
     header = dict(request.headers)
     body = payload
     session.insert(
-        "default.requests",
+        "requests",
         data=[[json.dumps(header), json.dumps(body)]],
         column_names=["headers", "body"],
     )
