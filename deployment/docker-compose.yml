@@ -1,0 +1,68 @@
+services:
+  clickhouse:
+    build:
+      context: .
+      dockerfile: ./database/Dockerfile
+      network: host
+    restart: unless-stopped
+    volumes:
+      - database:/var/lib/clickhouse
+      - ./database/init:/docker-entrypoint-initdb.d
+      - ./database/config:/etc/clickhouse-server/users.d
+    ulimits:
+      nofile: 262144
+    container_name: mostransport_clickhouse
+    networks:
+      - mostransport_net
+    expose:
+      - "8123"
+      - "9000"
+    ports:
+      - 28123:8123
+    environment:
+      - CLICKHOUSE_USER=docker
+      - CLICKHOUSE_PASSWORD=s3cr3t
+      - CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1
+      - CLICKHOUSE_DATABASE=webservice
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 521M
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:8123 || exit 1
+  webservice:
+    restart: "no"
+    build:
+      context: ..
+      dockerfile: ./deployment/web/Dockerfile
+      network: host
+    networks:
+      - mostransport_net
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      - CLICKHOUSE_HOST=clickhouse
+      - CLICKHOUSE_USER=docker
+      - CLICKHOUSE_PASSWORD=s3cr3t
+      - CLICKHOUSE_DATABASE=webservice
+    volumes:
+      - app:/var/www/backend:rw
+    container_name: mostransport_fastapi
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+
+volumes:
+  app: {}
+  database: {}
+
+networks:
+  mostransport_net:
