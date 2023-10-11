@@ -1,9 +1,6 @@
 services:
   clickhouse:
-    build:
-      context: .
-      dockerfile: ./database/Dockerfile
-      network: host
+    image: clickhouse/clickhouse-server:latest-alpine
     restart: unless-stopped
     volumes:
       - database:/var/lib/clickhouse
