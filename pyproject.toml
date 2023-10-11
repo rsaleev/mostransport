@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "mostransport"
+version = "0.1.0"
+description = ""
+authors = ["Rostislav Aleev <rs.aleev@gmail.com>"]
+readme = "README.md"
+packages = [{include = "mostransport", from = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.103.2"
+asynch = "^0.2.2"
+uvicorn = "^0.23.2"
+clickhouse-connect = "^0.6.14"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
