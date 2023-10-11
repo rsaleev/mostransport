@@ -13,9 +13,9 @@ def get_session() -> Generator[Client, None, None]:
     client = get_client(
         host=os.environ["CLICKHOUSE_HOST"],
         port=int(os.environ.get("CLICKHOUSE_PORT", 8123)),
-        username=os.environ.get("CLICKHOUSE_USER", "default"),
-        password=os.environ.get("CLICKHOUSE_PASSWORD", None),
-        database=os.environ.get("CLICKHOUSE_DATABASE", "default"),
+        username=os.environ["CLICKHOUSE_USER"],
+        password=os.environ["CLICKHOUSE_PASSWORD"],
+        database=os.environ["CLICKHOUSE_DATABASE"],
     )
     yield client
     client.close()
